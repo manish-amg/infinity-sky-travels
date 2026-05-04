@@ -1,0 +1,201 @@
+/* ============================================================
+   INFINITY SKY TRAVELS — RESPONSIVE (MOBILE-FIRST)
+   Breakpoints: 480, 768, 1024, 1280
+   ============================================================ */
+
+/* ── Nav: show hamburger on mobile ───────────────────────────── */
+@media (max-width: 1023px) {
+  .ist-nav__menu-wrapper { display: none; }
+  .ist-nav__whatsapp-label { display: none; }
+  .ist-nav__hamburger {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    background: none;
+    border: none;
+    padding: 6px;
+    cursor: pointer;
+    border-radius: var(--radius-sm);
+  }
+  .ist-nav__hamburger span {
+    display: block;
+    width: 24px; height: 2px;
+    background: var(--ist-white);
+    border-radius: 2px;
+    transition: var(--transition-fast);
+  }
+  .ist-nav__hamburger[aria-expanded="true"] span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+  .ist-nav__hamburger[aria-expanded="true"] span:nth-child(2) { opacity: 0; }
+  .ist-nav__hamburger[aria-expanded="true"] span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+  .ist-nav__whatsapp { display: none; }
+}
+
+@media (min-width: 1024px) {
+  .ist-nav__whatsapp-label { display: inline; }
+}
+
+/* ── Footer grid ─────────────────────────────────────────────── */
+@media (max-width: 1023px) {
+  .ist-footer__grid {
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-xl);
+  }
+}
+@media (max-width: 599px) {
+  .ist-footer__grid { grid-template-columns: 1fr; }
+  .ist-footer__bottom-inner { flex-direction: column; align-items: flex-start; }
+}
+
+/* ── Trust bar ─────────────────────────────────────────────────  */
+@media (max-width: 767px) {
+  .ist-trust-bar__grid { grid-template-columns: repeat(2, 1fr); }
+  .ist-trust-bar__stats { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 479px) {
+  .ist-trust-bar__grid { grid-template-columns: 1fr; }
+  .ist-trust-bar__stats { grid-template-columns: repeat(2, 1fr); }
+}
+
+/* ── Hero ───────────────────────────────────────────────────── */
+@media (max-width: 767px) {
+  .ist-hero { min-height: 100svh; }
+  .ist-hero__actions { flex-direction: column; align-items: center; }
+  .ist-hero__search-dock {
+    position: relative;
+    transform: none;
+    margin-top: var(--space-xl);
+  }
+}
+
+/* ── Route cards grid ───────────────────────────────────────── */
+.ist-routes-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-md);
+}
+@media (max-width: 1023px) { .ist-routes-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 599px)  { .ist-routes-grid { grid-template-columns: 1fr; } }
+
+/* ── Package grid ───────────────────────────────────────────── */
+.ist-package-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-md);
+}
+@media (max-width: 1023px) { .ist-package-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 599px)  { .ist-package-grid { grid-template-columns: 1fr; } }
+
+/* Mobile horizontal scroll for featured packages */
+@media (max-width: 767px) {
+  .ist-featured-packages .ist-package-grid {
+    display: flex;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scroll-snap-type: x mandatory;
+    gap: var(--space-sm);
+    padding-bottom: var(--space-sm);
+  }
+  .ist-featured-packages .ist-package-card {
+    flex: 0 0 280px;
+    scroll-snap-align: start;
+  }
+}
+
+/* ── Add-ons grid ────────────────────────────────────────────── */
+@media (max-width: 767px) { .ist-addons-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 479px) { .ist-addons-grid { grid-template-columns: 1fr; } }
+
+/* ── Traveller types ─────────────────────────────────────────── */
+@media (max-width: 767px) {
+  .ist-traveller-grid { grid-template-columns: 1fr; }
+  .ist-traveller-card { min-height: 220px; }
+}
+
+/* ── Why section ─────────────────────────────────────────────── */
+@media (max-width: 767px) {
+  .ist-why-grid { grid-template-columns: 1fr; }
+  .ist-why-photos { order: -1; }
+}
+
+/* ── Blog cards ──────────────────────────────────────────────── */
+.ist-blog-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-md);
+}
+@media (max-width: 1023px) { .ist-blog-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 599px)  { .ist-blog-grid { grid-template-columns: 1fr; } }
+
+/* ── Package single: sticky sidebar → below content on mobile ── */
+.ist-package-layout {
+  display: grid;
+  grid-template-columns: 1fr 360px;
+  gap: var(--space-xl);
+  align-items: start;
+}
+@media (max-width: 1023px) {
+  .ist-package-layout { grid-template-columns: 1fr; }
+  .ist-package-sidebar { position: static !important; order: -1; }
+}
+
+/* ── Includes/Excludes columns ───────────────────────────────── */
+@media (max-width: 599px) { .ist-incl-excl { grid-template-columns: 1fr; } }
+
+/* ── Mega menu → hidden on small screens ─────────────────────── */
+@media (max-width: 1023px) { .ist-mega-menu { display: none !important; } }
+
+/* ── WhatsApp float: smaller on mobile ───────────────────────── */
+@media (max-width: 479px) {
+  .ist-whatsapp-float { width: 52px; height: 52px; bottom: 20px; right: 16px; }
+  .ist-scroll-top { right: 16px; bottom: 84px; }
+}
+
+/* ── Section padding on mobile ───────────────────────────────── */
+@media (max-width: 767px) {
+  .ist-section { padding-block: var(--space-xl); }
+  :root { --space-2xl: 3.5rem; --space-3xl: 5rem; }
+  .ist-section-heading { text-align: left; }
+  .ist-section-subheading { text-align: left; margin-inline: 0; }
+  .ist-divider { margin-left: 0; margin-inline: 0; }
+}
+
+/* ── Tabs: scroll horizontal on narrow ───────────────────────── */
+.ist-tabs__nav { scrollbar-width: none; }
+.ist-tabs__nav::-webkit-scrollbar { display: none; }
+
+/* ── Forms ───────────────────────────────────────────────────── */
+@media (max-width: 599px) {
+  .ist-form-row-2 { grid-template-columns: 1fr !important; }
+}
+
+/* ── Contact layout ──────────────────────────────────────────── */
+.ist-contact-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-xl);
+}
+@media (max-width: 767px) { .ist-contact-layout { grid-template-columns: 1fr; } }
+
+/* ── About team grid ─────────────────────────────────────────── */
+.ist-team-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--space-md);
+}
+@media (max-width: 1023px) { .ist-team-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 479px)  { .ist-team-grid { grid-template-columns: 1fr; } }
+
+/* ── Itinerary builder ───────────────────────────────────────── */
+@media (max-width: 767px) {
+  .ist-builder-options { grid-template-columns: repeat(2, 1fr) !important; }
+}
+@media (max-width: 399px) {
+  .ist-builder-options { grid-template-columns: 1fr !important; }
+}
+
+/* ── Flight search bar ───────────────────────────────────────── */
+@media (max-width: 767px) {
+  .ist-search-bar__fields { grid-template-columns: 1fr !important; }
+  .ist-search-bar__swap { display: none; }
+}

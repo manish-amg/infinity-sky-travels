@@ -1,0 +1,59 @@
+# WordPress core (not tracked — installed separately on server)
+/wp-admin/
+/wp-includes/
+/wp-*.php
+!/wp-content/
+/index.php
+/xmlrpc.php
+/license.txt
+/readme.html
+
+# WordPress uploads (media library — too large for git)
+wp-content/uploads/
+
+# WordPress caches and generated files
+wp-content/cache/
+wp-content/upgrade/
+wp-content/backup-db/
+wp-content/advanced-cache.php
+wp-content/wp-cache-config.php
+wp-content/object-cache.php
+
+# Third-party plugins (install via WordPress.org/Composer)
+wp-content/plugins/akismet/
+wp-content/plugins/hello.php
+wp-content/plugins/advanced-custom-fields/
+wp-content/plugins/woocommerce/
+wp-content/plugins/rank-math-seo/
+wp-content/plugins/wordfence/
+wp-content/plugins/updraftplus/
+wp-content/plugins/wp-super-cache/
+wp-content/plugins/wp-smushit/
+wp-content/plugins/wp-mail-smtp/
+wp-content/plugins/cookie-notice/
+wp-content/plugins/contact-form-7/
+
+# Sensitive config
+wp-config.php
+.env
+.env.*
+
+# Temp and log files
+debug.log
+error_log
+*.log
+ist_*.php
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Zips (already tracked as source)
+# (Keeping phase zips for reference)

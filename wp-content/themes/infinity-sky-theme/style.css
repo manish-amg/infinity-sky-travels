@@ -1,0 +1,20 @@
+/*
+Theme Name:  Infinity Sky Travels
+Theme URI:   https://infinityskytravels.com
+Author:      Infinity Sky Travels
+Author URI:  https://infinityskytravels.com
+Description: Custom WordPress theme for Infinity Sky Travels — Nepal domestic flight booking and trekking packages for independent travellers. Built from scratch, no pre-built base.
+Version:     1.0.0
+Requires at least: 6.0
+Tested up to: 6.7
+Requires PHP: 8.0
+License:     Proprietary
+Text Domain: infinity-sky
+Tags:        travel, booking, nepal, trekking, flights, custom-theme
+*/
+
+/* ============================================================
+   This file is intentionally minimal — all styles live in
+   assets/css/main.css (loaded via functions.php wp_enqueue_style).
+   WordPress requires style.css to exist with the theme header above.
+   ============================================================ */
