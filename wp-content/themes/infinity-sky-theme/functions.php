@@ -12,7 +12,9 @@ define( 'IST_THEME_URI', get_template_directory_uri() );
 
 // ─── Required includes ────────────────────────────────────────────────────────
 require_once IST_THEME_DIR . '/inc/custom-post-types.php';
+require_once IST_THEME_DIR . '/inc/cpt-routes-activities-inquiries.php';
 require_once IST_THEME_DIR . '/inc/acf-fields.php';
+require_once IST_THEME_DIR . '/inc/acf-fields-routes-activities.php';
 require_once IST_THEME_DIR . '/inc/menus.php';
 require_once IST_THEME_DIR . '/inc/widgets.php';
 require_once IST_THEME_DIR . '/inc/schema.php';
@@ -252,6 +254,23 @@ function ist_format_price( $price, $currency = 'USD' ) {
         return '$' . number_format( (float) $price, 0 );
     }
     return 'NPR ' . number_format( (float) $price, 0 );
+}
+
+// ─── Image fallback helper ──────────────────────────────────────────────────────
+/**
+ * Returns a post's featured image URL, or the Infinity Sky logo mark
+ * (never a dead third-party placeholder service) if none is set.
+ */
+function ist_image_or_logo( int $post_id, string $size = 'ist-portrait' ): array {
+    $img_id = get_post_thumbnail_id( $post_id );
+    if ( $img_id ) {
+        $url = wp_get_attachment_image_url( $img_id, $size );
+        if ( $url ) {
+            $alt = get_post_meta( $img_id, '_wp_attachment_image_alt', true );
+            return [ 'url' => $url, 'alt' => $alt ?: get_the_title( $post_id ), 'is_logo' => false ];
+        }
+    }
+    return [ 'url' => IST_THEME_URI . '/assets/images/logo.svg', 'alt' => 'Infinity Sky Travels', 'is_logo' => true ];
 }
 
 // ─── Difficulty badge helper ───────────────────────────────────────────────────

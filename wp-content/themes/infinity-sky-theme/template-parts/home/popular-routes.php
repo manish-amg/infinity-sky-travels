@@ -1,82 +1,17 @@
 <?php
 /**
- * Section 3: Popular domestic routes — 6 cards in 3-col grid.
+ * Section 3: Popular domestic routes — driven by the ist_route CPT
+ * (wp-admin → Domestic Routes) so content editors can add/reorder/edit
+ * routes and photos without touching code.
  */
 
-$routes = [
-    [
-        'from'       => 'KTM',
-        'to'         => 'LUA',
-        'label'      => 'KTM → LUKLA',
-        'from_name'  => 'Kathmandu',
-        'to_name'    => 'Lukla',
-        'duration'   => '35 min',
-        'price'      => '$89',
-        'airlines'   => [ 'Tara Air', 'Summit Air' ],
-        'image'      => 'https://images.unsplash.com/photo-1605640840605-14ac1855827b?w=800&q=75&auto=format&fit=crop',
-        'image_alt'  => 'Tenzing-Hillary Airport Lukla Nepal',
-    ],
-    [
-        'from'       => 'KTM',
-        'to'         => 'PKR',
-        'label'      => 'KTM → POKHARA',
-        'from_name'  => 'Kathmandu',
-        'to_name'    => 'Pokhara',
-        'duration'   => '25 min',
-        'price'      => '$79',
-        'airlines'   => [ 'Buddha Air', 'Yeti Airlines' ],
-        'image'      => 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=800&q=75&auto=format&fit=crop',
-        'image_alt'  => 'Pokhara Nepal Phewa Lake mountains',
-    ],
-    [
-        'from'       => 'KTM',
-        'to'         => 'MEY',
-        'label'      => 'KTM → CHITWAN',
-        'from_name'  => 'Kathmandu',
-        'to_name'    => 'Bharatpur (Chitwan)',
-        'duration'   => '20 min',
-        'price'      => '$69',
-        'airlines'   => [ 'Buddha Air' ],
-        'image'      => 'https://images.unsplash.com/photo-1530289753786-a8a28a6c4de1?w=800&q=75&auto=format&fit=crop',
-        'image_alt'  => 'Chitwan National Park Nepal rhino',
-    ],
-    [
-        'from'       => 'KTM',
-        'to'         => 'BIR',
-        'label'      => 'KTM → BIRATNAGAR',
-        'from_name'  => 'Kathmandu',
-        'to_name'    => 'Biratnagar',
-        'duration'   => '40 min',
-        'price'      => '$95',
-        'airlines'   => [ 'Buddha Air', 'Yeti Airlines' ],
-        'image'      => 'https://images.unsplash.com/photo-1469521669194-babb45599def?w=800&q=75&auto=format&fit=crop',
-        'image_alt'  => 'Eastern Nepal Himalayas aerial',
-    ],
-    [
-        'from'       => 'KTM',
-        'to'         => 'KEP',
-        'label'      => 'KTM → NEPALGUNJ',
-        'from_name'  => 'Kathmandu',
-        'to_name'    => 'Nepalgunj',
-        'duration'   => '55 min',
-        'price'      => '$110',
-        'airlines'   => [ 'Buddha Air', 'Yeti Airlines' ],
-        'image'      => 'https://images.unsplash.com/photo-1560179707-f14e90ef3623?w=800&q=75&auto=format&fit=crop',
-        'image_alt'  => 'Western Nepal landscape',
-    ],
-    [
-        'from'       => 'KTM',
-        'to'         => 'JKR',
-        'label'      => 'KTM → JANAKPUR',
-        'from_name'  => 'Kathmandu',
-        'to_name'    => 'Janakpur',
-        'duration'   => '35 min',
-        'price'      => '$85',
-        'airlines'   => [ 'Yeti Airlines' ],
-        'image'      => 'https://images.unsplash.com/photo-1562778612-e1e0cda9915c?w=800&q=75&auto=format&fit=crop',
-        'image_alt'  => 'Janakpur Dham temple Nepal',
-    ],
-];
+$routes_query = new WP_Query( [
+    'post_type'      => 'ist_route',
+    'posts_per_page' => 6,
+    'post_status'    => 'publish',
+    'orderby'        => 'menu_order',
+    'order'          => 'ASC',
+] );
 ?>
 
 <section class="ist-section ist-section--light" id="popular-routes" aria-labelledby="routes-heading">
@@ -92,50 +27,69 @@ $routes = [
             </p>
         </div>
 
+        <?php if ( $routes_query->have_posts() ) : ?>
         <div class="ist-routes-grid" data-stagger>
-            <?php foreach ( $routes as $route ) : ?>
+            <?php while ( $routes_query->have_posts() ) : $routes_query->the_post();
+                $route_id    = get_the_ID();
+                $from_code   = get_field( 'ist_route_from_code', $route_id );
+                $to_code     = get_field( 'ist_route_to_code',   $route_id );
+                $from_name   = get_field( 'ist_route_from_name', $route_id ) ?: 'Kathmandu';
+                $to_name     = get_field( 'ist_route_to_name',   $route_id ) ?: get_the_title();
+                $duration    = get_field( 'ist_route_duration',  $route_id );
+                $price       = get_field( 'ist_route_price',     $route_id );
+                $airlines    = get_field( 'ist_route_airlines',  $route_id );
+                $airline_list= $airlines ? array_map( 'trim', explode( ',', $airlines ) ) : [];
+                $image       = ist_image_or_logo( $route_id, 'ist-card' );
+                ?>
 
-            <a href="<?php echo esc_url( home_url( '/flights?from=' . $route['from'] . '&to=' . $route['to'] ) ); ?>"
+            <a href="<?php echo esc_url( home_url( '/flights?from=' . urlencode( $from_code ) . '&to=' . urlencode( $to_code ) ) ); ?>"
                class="ist-route-card"
                data-fade
-               aria-label="<?php printf( esc_attr__( 'Search flights from %s to %s', 'infinity-sky' ), $route['from_name'], $route['to_name'] ); ?>">
+               aria-label="<?php printf( esc_attr__( 'Search flights from %1$s to %2$s', 'infinity-sky' ), $from_name, $to_name ); ?>">
 
-                <div class="ist-route-card__image" aria-hidden="true">
-                    <img src="<?php echo esc_url( $route['image'] ); ?>"
-                         alt="<?php echo esc_attr( $route['image_alt'] ); ?>"
+                <div class="ist-route-card__image<?php echo $image['is_logo'] ? ' ist-route-card__image--fallback' : ''; ?>" aria-hidden="true">
+                    <img src="<?php echo esc_url( $image['url'] ); ?>"
+                         alt="<?php echo esc_attr( $image['alt'] ); ?>"
                          loading="lazy"
                          width="600" height="400">
                 </div>
                 <div class="ist-route-card__overlay" aria-hidden="true"></div>
 
                 <div class="ist-route-card__content">
+                    <?php if ( $airline_list ) : ?>
                     <div class="ist-route-card__airlines" aria-label="<?php esc_attr_e( 'Airlines', 'infinity-sky' ); ?>">
-                        <?php foreach ( $route['airlines'] as $airline ) : ?>
+                        <?php foreach ( $airline_list as $airline ) : ?>
                             <span class="ist-route-card__airline"><?php echo esc_html( $airline ); ?></span>
                         <?php endforeach; ?>
                     </div>
+                    <?php endif; ?>
 
-                    <div class="ist-route-card__route"><?php echo esc_html( $route['label'] ); ?></div>
+                    <div class="ist-route-card__route"><?php echo esc_html( strtoupper( $from_code . ' → ' . $to_code ) ); ?></div>
                     <div class="ist-route-card__airports">
-                        <?php echo esc_html( $route['from_name'] ); ?> &rarr; <?php echo esc_html( $route['to_name'] ); ?>
+                        <?php echo esc_html( $from_name ); ?> &rarr; <?php echo esc_html( $to_name ); ?>
                     </div>
 
                     <div class="ist-route-card__meta">
+                        <?php if ( $price ) : ?>
                         <span class="ist-route-card__price">
                             <?php esc_html_e( 'from', 'infinity-sky' ); ?>
-                            <strong><?php echo esc_html( $route['price'] ); ?></strong>
+                            <strong><?php echo esc_html( ist_format_price( $price ) ); ?></strong>
                         </span>
+                        <?php endif; ?>
+                        <?php if ( $duration ) : ?>
                         <span class="ist-route-card__duration">
                             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-                            <?php echo esc_html( $route['duration'] ); ?>
+                            <?php echo esc_html( $duration ); ?>
                         </span>
+                        <?php endif; ?>
                     </div>
                 </div>
 
             </a>
 
-            <?php endforeach; ?>
+            <?php endwhile; wp_reset_postdata(); ?>
         </div><!-- /.ist-routes-grid -->
+        <?php endif; ?>
 
         <div class="text-center mt-lg" data-fade>
             <a href="<?php echo esc_url( home_url( '/flights' ) ); ?>" class="btn-outline--dark btn-outline">

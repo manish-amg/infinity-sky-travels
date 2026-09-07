@@ -1,0 +1,33 @@
+<svg width="240" height="240" viewBox="0 0 240 240" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Infinity Sky Travels">
+  <defs>
+    <linearGradient id="ist-logo-bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1A1A2E"/>
+      <stop offset="100%" stop-color="#0D0D0D"/>
+    </linearGradient>
+    <linearGradient id="ist-logo-mtn" x1="0%" y1="100%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#C45E0E"/>
+      <stop offset="100%" stop-color="#F4A261"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="240" height="240" fill="url(#ist-logo-bg)"/>
+
+  <!-- Mountain range -->
+  <path d="M0 168 L52 96 L82 132 L118 68 L156 132 L188 100 L240 168 Z" fill="url(#ist-logo-mtn)" opacity="0.95"/>
+  <path d="M0 168 L52 96 L82 132 L118 68 L120 71 L84 136 L54 100 L18 168 Z" fill="#E8751A" opacity="0.5"/>
+
+  <!-- Snow caps -->
+  <path d="M118 68 L131 84 L118 90 L105 84 Z" fill="#FFFFFF"/>
+  <path d="M156 132 L165 122 L174 132 L165 138 Z" fill="#FFFFFF" opacity="0.9"/>
+
+  <!-- Sky arc / infinity swoosh -->
+  <path d="M20 60 C 60 20, 100 20, 120 44 C 140 68, 180 68, 220 28" fill="none" stroke="#29ABE2" stroke-width="6" stroke-linecap="round" opacity="0.9"/>
+
+  <!-- Ground line -->
+  <rect x="0" y="168" width="240" height="72" fill="#0D0D0D"/>
+  <line x1="0" y1="168" x2="240" y2="168" stroke="#E8751A" stroke-width="2" opacity="0.6"/>
+
+  <!-- Wordmark -->
+  <text x="120" y="200" text-anchor="middle" font-family="Montserrat, Arial, sans-serif" font-weight="800" font-size="22" fill="#FFFFFF" letter-spacing="0.5">INFINITY SKY</text>
+  <text x="120" y="220" text-anchor="middle" font-family="Montserrat, Arial, sans-serif" font-weight="500" font-size="13" fill="#E8751A" letter-spacing="4">TRAVELS</text>
+</svg>

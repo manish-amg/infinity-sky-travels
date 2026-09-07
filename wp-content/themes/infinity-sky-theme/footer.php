@@ -63,18 +63,33 @@
                     </ul>
                 </div>
 
-                <!-- Col 3: Top Packages -->
+                <!-- Col 3: Top Packages (dynamic — always matches published packages, never a dead link) -->
                 <div class="ist-footer__col">
                     <h4 class="ist-footer__heading"><?php esc_html_e( 'Top Packages', 'infinity-sky' ); ?></h4>
                     <ul class="ist-footer__links">
-                        <li><a href="<?php echo esc_url( home_url( '/packages/everest-base-camp-classic-trek' ) ); ?>">EBC Classic Trek — 14 Days</a></li>
-                        <li><a href="<?php echo esc_url( home_url( '/packages/annapurna-base-camp-trek' ) ); ?>">Annapurna Base Camp — 12 Days</a></li>
-                        <li><a href="<?php echo esc_url( home_url( '/packages/langtang-valley-trek' ) ); ?>">Langtang Valley — 10 Days</a></li>
-                        <li><a href="<?php echo esc_url( home_url( '/packages/upper-mustang-forbidden-kingdom' ) ); ?>">Upper Mustang — 12 Days</a></li>
-                        <li><a href="<?php echo esc_url( home_url( '/packages/rara-lake-trek' ) ); ?>">Rara Lake Trek — 10 Days</a></li>
-                        <li><a href="<?php echo esc_url( home_url( '/packages/manaslu-circuit-trek' ) ); ?>">Manaslu Circuit — 14 Days</a></li>
-                        <li><a href="<?php echo esc_url( home_url( '/packages/ebc-luxury-trek' ) ); ?>">EBC Luxury Trek — 16 Days</a></li>
-                        <li><a href="<?php echo esc_url( home_url( '/packages/nepal-cultural-heritage-nagarkot' ) ); ?>">Cultural Heritage — 7 Days</a></li>
+                        <?php
+                        $ist_footer_packages = new WP_Query( [
+                            'post_type'      => 'ist_package',
+                            'posts_per_page' => 8,
+                            'post_status'    => 'publish',
+                            'orderby'        => 'menu_order',
+                            'order'          => 'ASC',
+                            'no_found_rows'  => true,
+                        ] );
+                        if ( $ist_footer_packages->have_posts() ) :
+                            while ( $ist_footer_packages->have_posts() ) : $ist_footer_packages->the_post();
+                                $ist_footer_days = get_field( 'ist_duration_days', get_the_ID() );
+                                ?>
+                                <li>
+                                    <a href="<?php the_permalink(); ?>">
+                                        <?php the_title(); ?><?php if ( $ist_footer_days ) : ?> — <?php echo esc_html( $ist_footer_days ); ?> Days<?php endif; ?>
+                                    </a>
+                                </li>
+                            <?php endwhile;
+                            wp_reset_postdata();
+                        else : ?>
+                            <li><a href="<?php echo esc_url( home_url( '/packages' ) ); ?>"><?php esc_html_e( 'View All Packages', 'infinity-sky' ); ?></a></li>
+                        <?php endif; ?>
                     </ul>
                 </div>
 

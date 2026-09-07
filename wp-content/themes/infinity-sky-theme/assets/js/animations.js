@@ -124,25 +124,56 @@
     handleNavScroll(); // run once on load
   }
 
-  // ── 7. Accordion (itinerary, FAQ) ────────────────────────────
-  document.querySelectorAll('.ist-accordion__header').forEach(function (btn) {
+  // ── 7a. Accordion — FAQ (single-ist_package.php: .ist-accordion-*) ──
+  document.querySelectorAll('.ist-accordion-trigger').forEach(function (btn) {
     btn.addEventListener('click', function () {
-      var item = this.closest('.ist-accordion__item');
-      var body = item.querySelector('.ist-accordion__body');
-      var inner = item.querySelector('.ist-accordion__body-inner');
-      var isOpen = item.classList.contains('open');
+      var item  = this.closest('.ist-accordion-item');
+      var body  = item.querySelector('.ist-accordion-body');
+      var inner = item.querySelector('.ist-accordion-body__inner');
+      var isOpen = item.classList.contains('ist-accordion-item--open');
 
-      // Close siblings
       var parent = item.parentElement;
-      parent.querySelectorAll('.ist-accordion__item.open').forEach(function (openItem) {
-        openItem.classList.remove('open');
-        openItem.querySelector('.ist-accordion__body').style.maxHeight = '0';
-        openItem.querySelector('.ist-accordion__header').setAttribute('aria-expanded', 'false');
+      parent.querySelectorAll('.ist-accordion-item--open').forEach(function (openItem) {
+        if (openItem === item) return;
+        openItem.classList.remove('ist-accordion-item--open');
+        openItem.querySelector('.ist-accordion-body').style.maxHeight = '0';
+        openItem.querySelector('.ist-accordion-trigger').setAttribute('aria-expanded', 'false');
       });
 
-      if (!isOpen) {
-        item.classList.add('open');
+      if (isOpen) {
+        item.classList.remove('ist-accordion-item--open');
+        body.style.maxHeight = '0';
+        btn.setAttribute('aria-expanded', 'false');
+      } else {
+        item.classList.add('ist-accordion-item--open');
         body.style.maxHeight = inner.scrollHeight + 'px';
+        btn.setAttribute('aria-expanded', 'true');
+      }
+    });
+  });
+
+  // ── 7b. Accordion — Itinerary (package-itinerary.php: .ist-itinerary-*) ──
+  document.querySelectorAll('.ist-itinerary-trigger').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var item = this.closest('.ist-itinerary-item');
+      var body = item.querySelector('.ist-itinerary-body');
+      var isOpen = item.classList.contains('ist-itinerary-item--open');
+
+      var parent = item.parentElement;
+      parent.querySelectorAll('.ist-itinerary-item--open').forEach(function (openItem) {
+        if (openItem === item) return;
+        openItem.classList.remove('ist-itinerary-item--open');
+        openItem.querySelector('.ist-itinerary-body').classList.remove('ist-itinerary-body--open');
+        openItem.querySelector('.ist-itinerary-trigger').setAttribute('aria-expanded', 'false');
+      });
+
+      if (isOpen) {
+        item.classList.remove('ist-itinerary-item--open');
+        body.classList.remove('ist-itinerary-body--open');
+        btn.setAttribute('aria-expanded', 'false');
+      } else {
+        item.classList.add('ist-itinerary-item--open');
+        body.classList.add('ist-itinerary-body--open');
         btn.setAttribute('aria-expanded', 'true');
       }
     });

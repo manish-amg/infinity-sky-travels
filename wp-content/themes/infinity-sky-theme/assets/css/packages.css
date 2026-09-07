@@ -508,6 +508,48 @@
 /* ── FAQ ─────────────────────────────────────────────────── */
 .ist-faq-list { display: flex; flex-direction: column; gap: 8px; }
 
+.ist-accordion-item {
+  border: 1px solid var(--ist-border);
+  border-radius: var(--radius-md, 10px);
+  overflow: hidden;
+  transition: border-color 0.25s;
+}
+.ist-accordion-item--open { border-color: var(--ist-orange); }
+
+.ist-accordion-trigger {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 16px 18px;
+  background: var(--ist-white);
+  border: none;
+  text-align: left;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--ist-text);
+  cursor: pointer;
+  transition: color 0.2s, background 0.2s;
+}
+.ist-accordion-trigger:hover { background: var(--ist-light); color: var(--ist-orange); }
+.ist-accordion-item--open .ist-accordion-trigger { color: var(--ist-orange); }
+
+.ist-accordion-icon { flex-shrink: 0; transition: transform 0.25s; }
+.ist-accordion-item--open .ist-accordion-icon { transform: rotate(180deg); }
+
+.ist-accordion-body {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.35s ease;
+}
+.ist-accordion-body__inner {
+  padding: 0 18px var(--space-md);
+  font-size: 14px;
+  line-height: 1.7;
+  color: var(--ist-text-light);
+}
+
 /* ── Flights tab ─────────────────────────────────────────── */
 .ist-package-flights h3 { margin-bottom: 8px; }
 .ist-package-flights__sub { color: var(--ist-text-light); font-size: 14px; margin-bottom: var(--space-lg); }

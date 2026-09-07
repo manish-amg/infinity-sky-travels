@@ -38,7 +38,7 @@
       desc:  'Start your Everest Base Camp trek directly from Lukla. Click to view the package.',
       show:  function (offer) { return offer && (offer.arr_code === 'LUA' || offer.dep_code === 'LUA'); },
       isLink:true,
-      link:  (config.siteUrl || '') + '/packages/everest-base-camp-classic-trek',
+      link:  (config.siteUrl || '') + '/packages/everest-base-camp-trek',
     },
     {
       id:    'porter-lukla',

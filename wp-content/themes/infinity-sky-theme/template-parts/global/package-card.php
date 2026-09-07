@@ -14,14 +14,12 @@ $altitude    = get_field( 'ist_max_altitude', $post_id );
 $season      = get_field( 'ist_best_season', $post_id );
 $highlights  = get_field( 'ist_highlights', $post_id );
 
-$img_id  = get_post_thumbnail_id( $post_id );
-$img_url = $img_id ? wp_get_attachment_image_url( $img_id, 'ist-portrait' ) : 'https://source.unsplash.com/400x540/?nepal,trekking,mountains';
-$img_alt = $img_id ? get_post_field( 'post_excerpt', $img_id ) : get_the_title();
+$image   = ist_image_or_logo( $post_id, 'ist-portrait' );
 $link    = get_permalink();
 ?>
 <article class="ist-package-card" itemscope itemtype="https://schema.org/TouristTrip">
-    <div class="ist-package-card__image">
-        <img src="<?php echo esc_url( $img_url ); ?>" alt="<?php echo esc_attr( $img_alt ?: get_the_title() ); ?>" loading="lazy" itemprop="image">
+    <div class="ist-package-card__image<?php echo $image['is_logo'] ? ' ist-package-card__image--fallback' : ''; ?>">
+        <img src="<?php echo esc_url( $image['url'] ); ?>" alt="<?php echo esc_attr( $image['alt'] ); ?>" loading="lazy" itemprop="image">
     </div>
     <div class="ist-package-card__gradient"></div>
 

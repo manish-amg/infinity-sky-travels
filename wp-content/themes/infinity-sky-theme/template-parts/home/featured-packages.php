@@ -56,7 +56,7 @@ $has_packages = $packages_query->have_posts();
                     'price'      => 1350,
                     'highlight'  => 'Stand at 5,545m — Kala Patthar viewpoint',
                     'highlights' => [ 'Lukla flight included', 'Experienced guide + porter', 'National park permits', 'All meals on trek' ],
-                    'slug'       => 'everest-base-camp-classic-trek',
+                    'slug'       => 'everest-base-camp-trek',
                     'image'      => 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=600&q=75&auto=format&fit=crop',
                     'image_alt'  => 'Everest Base Camp trek Nepal',
                 ],

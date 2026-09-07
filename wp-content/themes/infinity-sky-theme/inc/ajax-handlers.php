@@ -160,6 +160,18 @@ function ist_ajax_manual_quote() {
     $message .= "Passengers: $pax\n";
     $message .= "Notes: $notes\n";
 
+    // Always record the lead in wp-admin → Trip Inquiries first, so it is
+    // never lost even if the outbound email fails or lands in spam.
+    ist_create_inquiry( 'manual_quote', $name, [
+        'name'       => $name,
+        'email'      => $email,
+        'whatsapp'   => $whatsapp,
+        'route'      => "$from → $to",
+        'date'       => $date,
+        'passengers' => $pax,
+        'notes'      => $notes,
+    ] );
+
     $sent = wp_mail( 'infinityskytravels8@gmail.com', $subject, $message, [ 'Reply-To: ' . $email ] );
 
     if ( $sent ) {
@@ -251,6 +263,33 @@ function ist_ajax_plan_trip() {
     $message = implode( "\n", $lines );
     $headers = [ "Reply-To: $first_name $last_name <$email>" ];
 
+    // Record the lead in wp-admin → Trip Inquiries — this is the "Book This
+    // Trek" flow (sidebar links here with ?package=ID) as well as the
+    // standalone Plan My Trip form, so every booking attempt has a
+    // permanent backend record regardless of email deliverability.
+    ist_create_inquiry( 'plan_trip', "$first_name $last_name", [
+        'name'           => "$first_name $last_name",
+        'email'          => $email,
+        'phone'          => $phone,
+        'nationality'    => $nationality,
+        'region'         => $region,
+        'base_package'   => $base_package,
+        'depart_date'    => $depart_date,
+        'flexibility'    => $flexibility,
+        'duration'       => $duration,
+        'accommodation'  => $accommodation,
+        'budget'         => $budget,
+        'adults'         => $adults,
+        'children'       => $children,
+        'seniors'        => $seniors,
+        'group_type'     => $group_type,
+        'fitness_level'  => $fitness,
+        'experience'     => $experience,
+        'activities'     => $activities,
+        'special_requests' => $special,
+        'referral_source'  => $referral,
+    ] );
+
     $sent = wp_mail( $to, $subject, $message, $headers );
 
     // Also email the enquirer a confirmation
@@ -283,6 +322,13 @@ function ist_ajax_contact_form() {
     if ( ! $name || ! $email || ! $message || ! is_email( $email ) ) {
         wp_send_json_error( __( 'Please fill in all required fields.', 'infinity-sky' ), 422 );
     }
+
+    ist_create_inquiry( 'contact', $name, [
+        'name'    => $name,
+        'email'   => $email,
+        'subject' => $subject,
+        'message' => $message,
+    ] );
 
     $sent = wp_mail(
         'infinityskytravels8@gmail.com',

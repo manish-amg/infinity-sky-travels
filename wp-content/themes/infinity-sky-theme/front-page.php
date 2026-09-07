@@ -19,6 +19,8 @@ get_header();
 
     <?php get_template_part( 'template-parts/home/addons-strip' ); ?>
 
+    <?php get_template_part( 'template-parts/home/beyond-trekking' ); ?>
+
     <?php get_template_part( 'template-parts/home/traveller-types' ); ?>
 
     <?php get_template_part( 'template-parts/home/why-infinity-sky' ); ?>
