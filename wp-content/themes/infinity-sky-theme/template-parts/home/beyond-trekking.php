@@ -3,6 +3,11 @@
  * Beyond Trekking — Activities in Nepal.
  * Driven by the ist_activity CPT (wp-admin → Activities) so content
  * editors can add/reorder/edit activities and photos without code changes.
+ *
+ * Classic card layout: fixed-height image on top (explicit width/height
+ * attributes so the browser reserves the box before the image loads —
+ * no layout jump, no image dictating the card's actual size), separate
+ * content block below with title, meta, description, price and CTA.
  */
 
 $activities_query = new WP_Query( [
@@ -54,8 +59,7 @@ $ist_activity_category_icons = [
 
             <article class="ist-activity-card">
                 <a href="<?php echo esc_url( $link ); ?>" class="ist-activity-card__media<?php echo $image['is_logo'] ? ' ist-activity-card__media--fallback' : ''; ?>">
-                    <img src="<?php echo esc_url( $image['url'] ); ?>" alt="<?php echo esc_attr( $image['alt'] ); ?>" loading="lazy">
-                    <span class="ist-activity-card__gradient" aria-hidden="true"></span>
+                    <img src="<?php echo esc_url( $image['url'] ); ?>" alt="<?php echo esc_attr( $image['alt'] ); ?>" loading="lazy" width="400" height="220">
 
                     <?php if ( $category ) : ?>
                     <span class="ist-activity-card__category">
@@ -63,30 +67,32 @@ $ist_activity_category_icons = [
                         <?php echo esc_html( $category ); ?>
                     </span>
                     <?php endif; ?>
-
-                    <div class="ist-activity-card__overlay-content">
-                        <h3 class="ist-activity-card__title"><?php the_title(); ?></h3>
-                        <div class="ist-activity-card__meta">
-                            <?php if ( $location ) : ?>
-                            <span class="ist-activity-card__meta-item">
-                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-                                <?php echo esc_html( $location ); ?>
-                            </span>
-                            <?php endif; ?>
-                            <?php if ( $duration ) : ?>
-                            <span class="ist-activity-card__meta-item">
-                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-                                <?php echo esc_html( $duration ); ?>
-                            </span>
-                            <?php endif; ?>
-                        </div>
-                    </div>
                 </a>
 
-                <div class="ist-activity-card__footer">
+                <div class="ist-activity-card__body">
+                    <h3 class="ist-activity-card__title">
+                        <a href="<?php echo esc_url( $link ); ?>"><?php the_title(); ?></a>
+                    </h3>
+
+                    <div class="ist-activity-card__meta">
+                        <?php if ( $location ) : ?>
+                        <span class="ist-activity-card__meta-item">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                            <?php echo esc_html( $location ); ?>
+                        </span>
+                        <?php endif; ?>
+                        <?php if ( $duration ) : ?>
+                        <span class="ist-activity-card__meta-item">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                            <?php echo esc_html( $duration ); ?>
+                        </span>
+                        <?php endif; ?>
+                    </div>
+
                     <?php if ( has_excerpt() ) : ?>
                         <p class="ist-activity-card__desc"><?php echo esc_html( get_the_excerpt() ); ?></p>
                     <?php endif; ?>
+
                     <div class="ist-activity-card__row">
                         <?php if ( $price ) : ?>
                         <span class="ist-activity-card__price">
