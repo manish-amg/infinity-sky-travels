@@ -258,18 +258,36 @@ function ist_format_price( $price, $currency = 'USD' ) {
 
 // ─── Image fallback helper ──────────────────────────────────────────────────────
 /**
- * Returns a post's featured image URL, or the Infinity Sky logo mark
- * (never a dead third-party placeholder service) if none is set.
+ * Returns a post's image URL, or the Infinity Sky logo mark (never a dead
+ * third-party placeholder service) only when truly nothing is set.
+ *
+ * Checks, in order:
+ *  1. A real uploaded Featured Image (ignores the "-1" sentinel that
+ *     ist-sample-content's get_post_metadata filter returns for posts that
+ *     only have a _thumbnail_url — that sentinel is not a real attachment ID
+ *     and wp_get_attachment_image_url() would silently fail on it).
+ *  2. The _thumbnail_url post meta — the same external-image mechanism
+ *     ist-sample-content uses for packages/blog posts, reused here for
+ *     ist_route and ist_activity so seeded content shows its real curated
+ *     photo immediately, and an editor can still replace it any time via
+ *     the normal Featured Image box in wp-admin.
+ *  3. The Infinity Sky logo, only if neither of the above is set.
  */
 function ist_image_or_logo( int $post_id, string $size = 'ist-portrait' ): array {
     $img_id = get_post_thumbnail_id( $post_id );
-    if ( $img_id ) {
+    if ( $img_id && (int) $img_id !== -1 ) {
         $url = wp_get_attachment_image_url( $img_id, $size );
         if ( $url ) {
             $alt = get_post_meta( $img_id, '_wp_attachment_image_alt', true );
             return [ 'url' => $url, 'alt' => $alt ?: get_the_title( $post_id ), 'is_logo' => false ];
         }
     }
+
+    $external_url = get_post_meta( $post_id, '_thumbnail_url', true );
+    if ( $external_url ) {
+        return [ 'url' => $external_url, 'alt' => get_the_title( $post_id ), 'is_logo' => false ];
+    }
+
     return [ 'url' => IST_THEME_URI . '/assets/images/logo.svg', 'alt' => 'Infinity Sky Travels', 'is_logo' => true ];
 }
 

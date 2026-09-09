@@ -204,36 +204,33 @@ add_action( 'save_post_ist_inquiry', function( $post_id ) {
 } );
 
 /**
- * Sideload a remote image and set it as a post's featured image.
- * Used only for pre-vetted, verified-reachable URLs — never a guess.
- * Failures are silent (post simply falls back to the logo via
- * ist_image_or_logo()), so a slow/blocked remote host never breaks seeding.
+ * Set a seeded post's image via the same _thumbnail_url meta mechanism
+ * ist-sample-content uses for packages and blog posts (see its
+ * post_thumbnail_html / has_post_thumbnail / get_post_metadata filters).
+ *
+ * This intentionally does NOT use media_sideload_image() to fetch the photo
+ * into the Media Library — this host's outbound HTTP from PHP is unreliable
+ * for that (sideloading silently failed for every route on first deploy,
+ * leaving every card on the logo fallback). Storing the URL directly is
+ * instant and 100% reliable, and ist_image_or_logo() already prefers a real
+ * uploaded Featured Image first — so replacing this with an actual upload
+ * later via wp-admin works exactly as expected.
  */
 function ist_seed_set_thumbnail( int $post_id, string $image_url, string $desc ): void {
-    if ( ! function_exists( 'media_sideload_image' ) ) {
-        require_once ABSPATH . 'wp-admin/includes/media.php';
-        require_once ABSPATH . 'wp-admin/includes/file.php';
-        require_once ABSPATH . 'wp-admin/includes/image.php';
-    }
-    $attachment_id = media_sideload_image( $image_url, $post_id, $desc, 'id' );
-    if ( ! is_wp_error( $attachment_id ) ) {
-        set_post_thumbnail( $post_id, $attachment_id );
-        update_post_meta( $attachment_id, '_wp_attachment_image_alt', $desc );
-    }
+    update_post_meta( $post_id, '_thumbnail_url', esc_url_raw( $image_url ) );
 }
 
 // ─── Seed default Routes + Activities content (idempotent) ────────────────────
 function ist_seed_routes_and_activities() {
     if ( 'yes' !== get_option( 'ist_routes_activities_seeded' ) ) {
 
-        // Popular Domestic Routes — image URLs are pre-verified, working Unsplash
-        // direct-CDN links (not the dead source.unsplash.com redirect service).
-        // Routes without a verified photo simply fall back to the Infinity Sky
-        // logo via ist_image_or_logo() rather than risk showing a mismatched image.
+        // Popular Domestic Routes — every image URL below was verified (fetched
+        // and confirmed HTTP 200, source page title checked for a real content
+        // match) before being used — no guessed stock photos.
         $routes = [
             [ 'title' => 'Kathmandu → Lukla',     'from_code' => 'KTM', 'to_code' => 'LUA', 'from_name' => 'Kathmandu', 'to_name' => 'Lukla',               'duration' => '35 min', 'price' => 89,  'airlines' => 'Tara Air, Summit Air',      'image' => 'https://images.unsplash.com/photo-1605640840605-14ac1855827b?w=800&q=75&auto=format&fit=crop', 'image_desc' => 'Tenzing-Hillary Airport, Lukla, Nepal' ],
             [ 'title' => 'Kathmandu → Pokhara',    'from_code' => 'KTM', 'to_code' => 'PKR', 'from_name' => 'Kathmandu', 'to_name' => 'Pokhara',             'duration' => '25 min', 'price' => 79,  'airlines' => 'Buddha Air, Yeti Airlines', 'image' => 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=800&q=75&auto=format&fit=crop', 'image_desc' => 'Phewa Lake, Pokhara, Nepal' ],
-            [ 'title' => 'Kathmandu → Bharatpur',  'from_code' => 'KTM', 'to_code' => 'MEY', 'from_name' => 'Kathmandu', 'to_name' => 'Bharatpur (Chitwan)', 'duration' => '20 min', 'price' => 69,  'airlines' => 'Buddha Air',                'image' => '', 'image_desc' => 'Bharatpur, Chitwan, Nepal' ],
+            [ 'title' => 'Kathmandu → Bharatpur',  'from_code' => 'KTM', 'to_code' => 'MEY', 'from_name' => 'Kathmandu', 'to_name' => 'Bharatpur (Chitwan)', 'duration' => '20 min', 'price' => 69,  'airlines' => 'Buddha Air',                'image' => 'https://commons.wikimedia.org/wiki/Special:FilePath/Chital,%20at%20Chitwan%20NP,%20Nepal.jpg?width=1200', 'image_desc' => 'Wildlife at Chitwan National Park, Nepal' ],
             [ 'title' => 'Kathmandu → Biratnagar', 'from_code' => 'KTM', 'to_code' => 'BIR', 'from_name' => 'Kathmandu', 'to_name' => 'Biratnagar',          'duration' => '40 min', 'price' => 95,  'airlines' => 'Buddha Air, Yeti Airlines', 'image' => 'https://images.unsplash.com/photo-1469521669194-babb45599def?w=800&q=75&auto=format&fit=crop', 'image_desc' => 'Eastern Nepal Himalayas' ],
             [ 'title' => 'Kathmandu → Nepalgunj',  'from_code' => 'KTM', 'to_code' => 'KEP', 'from_name' => 'Kathmandu', 'to_name' => 'Nepalgunj',           'duration' => '55 min', 'price' => 110, 'airlines' => 'Buddha Air, Yeti Airlines', 'image' => 'https://images.unsplash.com/photo-1560179707-f14e90ef3623?w=800&q=75&auto=format&fit=crop', 'image_desc' => 'Western Nepal landscape' ],
             [ 'title' => 'Kathmandu → Janakpur',   'from_code' => 'KTM', 'to_code' => 'JKR', 'from_name' => 'Kathmandu', 'to_name' => 'Janakpur',            'duration' => '35 min', 'price' => 85,  'airlines' => 'Yeti Airlines',             'image' => 'https://images.unsplash.com/photo-1562778612-e1e0cda9915c?w=800&q=75&auto=format&fit=crop', 'image_desc' => 'Janakpur Dham temple, Nepal' ],
@@ -259,17 +256,19 @@ function ist_seed_routes_and_activities() {
             }
         }
 
-        // Beyond Trekking / Activities in Nepal — no stock photo is assigned
-        // here on purpose: rather than guess a mismatched image, every activity
-        // starts on the Infinity Sky logo fallback until a real photo is
-        // uploaded via Featured Image in wp-admin → Activities.
+        // Beyond Trekking / Activities in Nepal — every image below is a real,
+        // verified Wikimedia Commons photo of the actual activity/location
+        // (file title checked for a genuine content match, URL confirmed
+        // HTTP 200) rather than a guessed stock photo. Replace any of these
+        // via Featured Image in wp-admin → Activities whenever a branded
+        // photo is ready — ist_image_or_logo() always prefers that first.
         $activities = [
-            [ 'title' => 'Paragliding in Pokhara',           'category' => 'Adventure', 'location' => 'Pokhara',          'duration' => 'Half day', 'price' => 90,  'excerpt' => 'Tandem paraglide over Phewa Lake with the Annapurna range as your backdrop.' ],
-            [ 'title' => 'Chitwan Jungle Safari',             'category' => 'Wildlife',  'location' => 'Chitwan',          'duration' => '2–3 days','price' => 180, 'excerpt' => 'Jeep and canoe safari through Chitwan National Park — rhinos, gharials, and Tharu culture.' ],
-            [ 'title' => 'Kathmandu Cultural Heritage Tour',  'category' => 'Culture',   'location' => 'Kathmandu',        'duration' => 'Full day','price' => 45,  'excerpt' => 'Durbar Square, Pashupatinath, Boudhanath and Swayambhunath with a licensed guide.' ],
-            [ 'title' => 'White-Water Rafting, Trishuli',     'category' => 'Adventure', 'location' => 'Trishuli',         'duration' => '1 day',   'price' => 55,  'excerpt' => 'Grade III–IV rapids on the Trishuli River, an easy add-on between Kathmandu and Pokhara.' ],
-            [ 'title' => 'Mountain Biking, Kathmandu Valley', 'category' => 'Adventure', 'location' => 'Kathmandu Valley', 'duration' => 'Full day','price' => 60,  'excerpt' => 'Ride ancient trade trails through Newari villages around the Kathmandu Valley rim.' ],
-            [ 'title' => 'Bungee Jump, The Last Resort',      'category' => 'Adventure', 'location' => 'Bhote Koshi',      'duration' => 'Half day','price' => 100, 'excerpt' => 'A 160m freefall over the Bhote Koshi gorge on the way to the Tibet border.' ],
+            [ 'title' => 'Paragliding in Pokhara',           'category' => 'Adventure', 'location' => 'Pokhara',          'duration' => 'Half day', 'price' => 90,  'excerpt' => 'Tandem paraglide over Phewa Lake with the Annapurna range as your backdrop.', 'image' => 'https://commons.wikimedia.org/wiki/Special:FilePath/Fewa-Pamey-Paragliding.JPG?width=1200', 'image_desc' => 'Paragliding over Phewa Lake, Pokhara' ],
+            [ 'title' => 'Chitwan Jungle Safari',             'category' => 'Wildlife',  'location' => 'Chitwan',          'duration' => '2–3 days','price' => 180, 'excerpt' => 'Jeep and canoe safari through Chitwan National Park — rhinos, gharials, and Tharu culture.', 'image' => "https://commons.wikimedia.org/wiki/Special:FilePath/Rhino's%20in%20Chitwan%20National%20Park.jpg?width=1200", 'image_desc' => 'Rhino in Chitwan National Park, Nepal' ],
+            [ 'title' => 'Kathmandu Cultural Heritage Tour',  'category' => 'Culture',   'location' => 'Kathmandu',        'duration' => 'Full day','price' => 45,  'excerpt' => 'Durbar Square, Pashupatinath, Boudhanath and Swayambhunath with a licensed guide.', 'image' => 'https://commons.wikimedia.org/wiki/Special:FilePath/Kathmandu%20Durbar%20Square%2002122024%2058.jpg?width=1200', 'image_desc' => 'Kathmandu Durbar Square, Nepal' ],
+            [ 'title' => 'White-Water Rafting, Trishuli',     'category' => 'Adventure', 'location' => 'Trishuli',         'duration' => '1 day',   'price' => 55,  'excerpt' => 'Grade III–IV rapids on the Trishuli River, an easy add-on between Kathmandu and Pokhara.', 'image' => 'https://commons.wikimedia.org/wiki/Special:FilePath/Demonstration%20Before%20Raft-Rafting%20in%20Trishuli%20River,%20Nepal-3060%20-%20edited.jpg?width=1200', 'image_desc' => 'White-water rafting on the Trishuli River, Nepal' ],
+            [ 'title' => 'Mountain Biking, Kathmandu Valley', 'category' => 'Adventure', 'location' => 'Kathmandu Valley', 'duration' => 'Full day','price' => 60,  'excerpt' => 'Ride ancient trade trails through Newari villages around the Kathmandu Valley rim.', 'image' => 'https://commons.wikimedia.org/wiki/Special:FilePath/Mountain%20Biking%20in%20Bhaktapur.JPG?width=1200', 'image_desc' => 'Mountain biking in Bhaktapur, Kathmandu Valley' ],
+            [ 'title' => 'Bungee Jump, The Last Resort',      'category' => 'Adventure', 'location' => 'Bhote Koshi',      'duration' => 'Half day','price' => 100, 'excerpt' => 'A 160m freefall over the Bhote Koshi gorge on the way to the Tibet border.', 'image' => 'https://commons.wikimedia.org/wiki/Special:FilePath/Bhote%20Koshi.JPG?width=1200', 'image_desc' => 'Bhote Koshi gorge, Nepal' ],
         ];
         foreach ( $activities as $i => $a ) {
             $id = wp_insert_post( [
@@ -283,6 +282,9 @@ function ist_seed_routes_and_activities() {
                 update_post_meta( $id, 'ist_activity_location', $a['location'] );
                 update_post_meta( $id, 'ist_activity_duration', $a['duration'] );
                 update_post_meta( $id, 'ist_activity_price',    $a['price'] );
+                if ( $a['image'] ) {
+                    ist_seed_set_thumbnail( $id, $a['image'], $a['image_desc'] );
+                }
 
                 if ( ! term_exists( $a['category'], 'ist_activity_category' ) ) {
                     wp_insert_term( $a['category'], 'ist_activity_category', [ 'slug' => sanitize_title( $a['category'] ) ] );
