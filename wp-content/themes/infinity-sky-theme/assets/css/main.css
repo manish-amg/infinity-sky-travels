@@ -931,3 +931,38 @@ p:last-child { margin-bottom: 0; }
   white-space: nowrap;
 }
 .ist-activity-card__link:hover { gap: 8px; }
+
+/* ── Single Activity page ─────────────────────────────────────── */
+.ist-activity-single__meta {
+  display: flex; flex-wrap: wrap; gap: 18px;
+  margin-top: 10px;
+}
+.ist-activity-single__lead {
+  font-size: 1.15rem;
+  color: var(--ist-text);
+  line-height: 1.7;
+  margin-bottom: var(--space-lg);
+}
+.ist-activity-single__content {
+  font-size: 1rem;
+  line-height: 1.8;
+  color: var(--ist-text);
+}
+.ist-activity-single__content p { margin-bottom: 1.2em; }
+
+.ist-activity-single__cta-strip {
+  margin-top: var(--space-xl);
+  padding: var(--space-lg);
+  background: var(--ist-light);
+  border-radius: var(--radius-lg, 16px);
+  text-align: center;
+}
+.ist-activity-single__cta-strip h3 { margin-bottom: 8px; }
+.ist-activity-single__cta-strip p { color: var(--ist-text-light); margin-bottom: var(--space-md); }
+
+.ist-activity-single__related {
+  margin-top: var(--space-2xl);
+  padding-top: var(--space-xl);
+  border-top: 1px solid var(--ist-border);
+}
+.ist-activity-single__related .ist-activity-grid { margin-top: var(--space-lg); }

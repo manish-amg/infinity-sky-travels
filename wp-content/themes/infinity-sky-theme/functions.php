@@ -10,6 +10,18 @@ define( 'IST_VERSION', '1.0.0' );
 define( 'IST_THEME_DIR', get_template_directory() );
 define( 'IST_THEME_URI', get_template_directory_uri() );
 
+/**
+ * Per-file cache-busting version, based on the file's own last-modified
+ * time rather than the static IST_VERSION constant. A static version
+ * string only busts client/proxy caching when someone remembers to bump
+ * it — this changes automatically on every deploy, for exactly the file
+ * that changed, with no manual step to forget.
+ */
+function ist_asset_version( string $relative_path ): string {
+    $file = IST_THEME_DIR . $relative_path;
+    return file_exists( $file ) ? (string) filemtime( $file ) : IST_VERSION;
+}
+
 // ─── Required includes ────────────────────────────────────────────────────────
 require_once IST_THEME_DIR . '/inc/custom-post-types.php';
 require_once IST_THEME_DIR . '/inc/cpt-routes-activities-inquiries.php';
@@ -66,22 +78,22 @@ function ist_enqueue_styles() {
     );
 
     // Core stylesheets
-    wp_enqueue_style( 'ist-main',       IST_THEME_URI . '/assets/css/main.css',             [ 'ist-google-fonts' ], IST_VERSION );
-    wp_enqueue_style( 'ist-animations', IST_THEME_URI . '/assets/css/animations.css',        [ 'ist-main' ],         IST_VERSION );
-    wp_enqueue_style( 'ist-responsive', IST_THEME_URI . '/assets/css/responsive.css',        [ 'ist-main' ],         IST_VERSION );
+    wp_enqueue_style( 'ist-main',       IST_THEME_URI . '/assets/css/main.css',             [ 'ist-google-fonts' ], ist_asset_version( '/assets/css/main.css' ) );
+    wp_enqueue_style( 'ist-animations', IST_THEME_URI . '/assets/css/animations.css',        [ 'ist-main' ],         ist_asset_version( '/assets/css/animations.css' ) );
+    wp_enqueue_style( 'ist-responsive', IST_THEME_URI . '/assets/css/responsive.css',        [ 'ist-main' ],         ist_asset_version( '/assets/css/responsive.css' ) );
 
     // Page-specific stylesheets
     if ( is_page( 'flights' ) ) {
-        wp_enqueue_style( 'ist-flights', IST_THEME_URI . '/assets/css/flight-search.css', [ 'ist-main' ], IST_VERSION );
+        wp_enqueue_style( 'ist-flights', IST_THEME_URI . '/assets/css/flight-search.css', [ 'ist-main' ], ist_asset_version( '/assets/css/flight-search.css' ) );
     }
-    if ( is_page( 'packages' ) || is_singular( 'ist_package' ) ) {
-        wp_enqueue_style( 'ist-packages', IST_THEME_URI . '/assets/css/packages.css', [ 'ist-main' ], IST_VERSION );
+    if ( is_page( 'packages' ) || is_singular( 'ist_package' ) || is_singular( 'ist_activity' ) || is_post_type_archive( 'ist_activity' ) ) {
+        wp_enqueue_style( 'ist-packages', IST_THEME_URI . '/assets/css/packages.css', [ 'ist-main' ], ist_asset_version( '/assets/css/packages.css' ) );
     }
     if ( is_page( 'plan-my-trip' ) ) {
-        wp_enqueue_style( 'ist-plan-my-trip', IST_THEME_URI . '/assets/css/plan-my-trip.css', [ 'ist-main' ], IST_VERSION );
+        wp_enqueue_style( 'ist-plan-my-trip', IST_THEME_URI . '/assets/css/plan-my-trip.css', [ 'ist-main' ], ist_asset_version( '/assets/css/plan-my-trip.css' ) );
     }
     if ( is_singular( 'post' ) || is_archive() || is_category() || is_tag() || is_page( 'about' ) || is_page( 'contact' ) ) {
-        wp_enqueue_style( 'ist-blog', IST_THEME_URI . '/assets/css/blog.css', [ 'ist-main' ], IST_VERSION );
+        wp_enqueue_style( 'ist-blog', IST_THEME_URI . '/assets/css/blog.css', [ 'ist-main' ], ist_asset_version( '/assets/css/blog.css' ) );
     }
 
     // Swiper CSS
@@ -98,20 +110,20 @@ function ist_enqueue_scripts() {
     wp_enqueue_style(  'flatpickr-css','https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css',               [], '4.6.13' );
 
     // Core JS
-    wp_enqueue_script( 'ist-animations', IST_THEME_URI . '/assets/js/animations.js', [ 'jarallax', 'swiper' ], IST_VERSION, true );
-    wp_enqueue_script( 'ist-main',        IST_THEME_URI . '/assets/js/main.js',        [ 'jquery', 'ist-animations' ], IST_VERSION, true );
+    wp_enqueue_script( 'ist-animations', IST_THEME_URI . '/assets/js/animations.js', [ 'jarallax', 'swiper' ], ist_asset_version( '/assets/js/animations.js' ), true );
+    wp_enqueue_script( 'ist-main',        IST_THEME_URI . '/assets/js/main.js',        [ 'jquery', 'ist-animations' ], ist_asset_version( '/assets/js/main.js' ), true );
 
     // Page-specific JS
     if ( is_front_page() || is_page( 'flights' ) ) {
-        wp_enqueue_script( 'ist-flight-search',  IST_THEME_URI . '/assets/js/flight-search.js',  [ 'ist-main', 'flatpickr' ], IST_VERSION, true );
-        wp_enqueue_script( 'ist-flight-results', IST_THEME_URI . '/assets/js/flight-results.js', [ 'ist-flight-search' ],     IST_VERSION, true );
-        wp_enqueue_script( 'ist-booking-modal',  IST_THEME_URI . '/assets/js/booking-modal.js',  [ 'ist-flight-results' ],    IST_VERSION, true );
+        wp_enqueue_script( 'ist-flight-search',  IST_THEME_URI . '/assets/js/flight-search.js',  [ 'ist-main', 'flatpickr' ], ist_asset_version( '/assets/js/flight-search.js' ), true );
+        wp_enqueue_script( 'ist-flight-results', IST_THEME_URI . '/assets/js/flight-results.js', [ 'ist-flight-search' ],     ist_asset_version( '/assets/js/flight-results.js' ), true );
+        wp_enqueue_script( 'ist-booking-modal',  IST_THEME_URI . '/assets/js/booking-modal.js',  [ 'ist-flight-results' ],    ist_asset_version( '/assets/js/booking-modal.js' ), true );
     }
     if ( is_page( 'packages' ) || is_singular( 'ist_package' ) ) {
-        wp_enqueue_script( 'ist-package-filter', IST_THEME_URI . '/assets/js/package-filter.js', [ 'ist-main' ], IST_VERSION, true );
+        wp_enqueue_script( 'ist-package-filter', IST_THEME_URI . '/assets/js/package-filter.js', [ 'ist-main' ], ist_asset_version( '/assets/js/package-filter.js' ), true );
     }
     if ( is_page( 'plan-my-trip' ) ) {
-        wp_enqueue_script( 'ist-plan-my-trip', IST_THEME_URI . '/assets/js/plan-my-trip.js', [ 'ist-main', 'flatpickr' ], IST_VERSION, true );
+        wp_enqueue_script( 'ist-plan-my-trip', IST_THEME_URI . '/assets/js/plan-my-trip.js', [ 'ist-main', 'flatpickr' ], ist_asset_version( '/assets/js/plan-my-trip.js' ), true );
     }
 
     // WooCommerce cart fragments
@@ -229,13 +241,20 @@ function ist_breadcrumb() {
     if ( is_singular( 'ist_package' ) ) {
         $items[] = '<a href="' . home_url( '/packages' ) . '">' . __( 'Packages', 'infinity-sky' ) . '</a>';
         $items[] = get_the_title();
+    } elseif ( is_singular( 'ist_activity' ) ) {
+        $items[] = '<a href="' . home_url( '/activities' ) . '">' . __( 'Activities in Nepal', 'infinity-sky' ) . '</a>';
+        $items[] = get_the_title();
+    } elseif ( is_post_type_archive( 'ist_activity' ) ) {
+        $items[] = __( 'Activities in Nepal', 'infinity-sky' );
     } elseif ( is_singular( 'post' ) ) {
         $items[] = '<a href="' . home_url( '/blog' ) . '">' . __( 'Blog', 'infinity-sky' ) . '</a>';
         $items[] = get_the_title();
     } elseif ( is_page() ) {
         $items[] = get_the_title();
-    } elseif ( is_category() || is_tag() || is_archive() ) {
+    } elseif ( is_category() || is_tag() ) {
         $items[] = single_cat_title( '', false );
+    } elseif ( is_archive() ) {
+        $items[] = post_type_archive_title( '', false ) ?: single_cat_title( '', false );
     }
 
     echo '<nav class="ist-breadcrumb" aria-label="Breadcrumb"><ol>';

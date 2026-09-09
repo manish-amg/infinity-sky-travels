@@ -12,11 +12,16 @@ defined( 'ABSPATH' ) || exit;
 remove_action( 'wp_head', 'wp_generator' );
 add_filter( 'the_generator', '__return_empty_string' );
 
-// Remove version from scripts and styles
+// Hide the WordPress core version fingerprint only — NOT the theme/plugin
+// cache-busting version. Stripping every ?ver= (the original behaviour)
+// meant a CSS/JS edit never reached an already-cached browser, since
+// .htaccess also caches CSS/JS for a month client-side with no other way
+// to bust it. Only mask ?ver= when it actually equals WP's own version.
 add_filter( 'style_loader_src',  'ist_sec_remove_version', 10, 2 );
 add_filter( 'script_loader_src', 'ist_sec_remove_version', 10, 2 );
 function ist_sec_remove_version( string $src, string $handle ): string {
-    if ( strpos( $src, '?ver=' ) ) {
+    $wp_version = get_bloginfo( 'version' );
+    if ( $wp_version && strpos( $src, '?ver=' . $wp_version ) !== false ) {
         $src = remove_query_arg( 'ver', $src );
     }
     return $src;
